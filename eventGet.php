@@ -75,6 +75,7 @@ $events = json_decode($result, true);
 $event_results = array();
 
 foreach ($events as $event) {
+    $id = $event["id"];
     $title = $event['title'];
     $url = $event['url'];
     $start_date = $event['start_date'];
@@ -90,10 +91,11 @@ foreach ($events as $event) {
     $end_time = date("g:i a", strtotime($event['end_date'])); 
 
     $branch = array_values($event['branch']);
-    $program_type = array_keys($event['program_type']);
-    $age_group = array_keys($event['age_group']);
+    $program_type = array_values($event['program_type']);
+    $age_group_class = strtolower(array_values($event['age_group'])[0]);
+    $age_group_label = array_values($event['age_group'])[0];
 
-    $event_results = array(
+    $event_results[$id] = array(
         'title'         => $title,
         'url'           => $url,         
         'start_date'    => $start_date_formatted,
@@ -101,7 +103,8 @@ foreach ($events as $event) {
         'end_time'      => $end_time,
         'branch'        => $branch,
         'program_type'  => $program_type,
-        'age_group'     => $age_group,   
+        'age_group_class'     => $age_group_class,
+        'age_group_label'     => $age_group_label,   
     );
 }
 
