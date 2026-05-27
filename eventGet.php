@@ -108,51 +108,33 @@ foreach ($events as $event) {
     );
 }
 
-function eventGet($start, $end, $type, $age, $branch, $quantity){
-    $url = "https://howardcounty.librarycalendar.com/events/feed/json?";
+function eventGet($start, $end, $type, $age, $branch, $quantity)
+{
+    $url = 'https://howardcounty.librarycalendar.com/events/feed/json?';
 
-    if (isset($start)) {
-        $url .= "start=$start&";
-    }
-    if (isset($end)) {
-        $url .= "end=$end&";
-    }
-    if (isset($type)) {
-        $type_url = implode(',',$type);
-        $url .= "program_types=$type_url&";
-    }
-    if (isset($age)) {
-        $age_url = implode(',',$age);
-        $url .= "age_groups=$age_url&";
-    }
-    if (isset($branch)) {
-        $branch_url = implode(',',$branch);
-        $url .= "branches=$branch_url&";
-    }
-    if (isset($quantity)) {
-         $url .= "quantity=$quantity";
-    }
+    if ($start)    $url .= "start=$start&";
+    if ($end)      $url .= "end=$end&";
+    if (!empty($type))   $url .= 'program_types=' . implode(',', $type) . '&';
+    if (!empty($age))    $url .= 'age_groups='    . implode(',', $age)  . '&';
+    if (!empty($branch)) $url .= 'branches='      . implode(',', $branch) . '&';
+    if ($quantity) $url .= "quantity=$quantity";
 
     $ch = curl_init();
-
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-    $headers = array(
-        "Accept: application/json",
-        "Content-Type: application/json",
-    );
-
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Accept: application/json',
+        'Content-Type: application/json',
+    ]);
 
     $result = curl_exec($ch);
 
     if (curl_errno($ch)) {
-        die("cURL error: " . curl_error($ch));
+        curl_close($ch);
+        throw new Exception('cURL error: ' . curl_error($ch));
     }
 
     curl_close($ch);
-    
     return $result;
 }
 
